@@ -1,36 +1,63 @@
 #include <iostream>
-#include <queue>
+#include <vector>
 
 using namespace std;
 
-int main() {
-    int n;
-    if (!(cin >> n)) return 0;
-
-    priority_queue<long long> pq;
-
-    for (int i = 0; i < n; ++i) {
-        long long a;
-        cin >> a;
-        pq.push(a);
-    }
-
-    while (pq.size() > 1) {
-        long long first = pq.top();
-        pq.pop();
-        long long second = pq.top();
-        pq.pop();
-
-        if (first != second) {
-            pq.push(first - second);
+struct heap {
+    vector<long long> a;
+    void heapify(int i) {
+        int l = 2 * i + 1;
+        int r = 2 * i + 2;
+        int s = i;
+        if (l < a.size() && a[l] > a[s]) s = l;
+        if (r < a.size() && a[r] > a[s]) s = r;
+        if (s != i) {
+            swap(a[s], a[i]);
+            heapify(s);
         }
     }
-
-    if (pq.empty()) {
-        cout << 0 << "\n";
-    } else {
-        cout << pq.top() << "\n";
+    void push(long long x) {
+        a.push_back(x);
+        int i = a.size() - 1;
+        while (i > 0) {
+            int p = (i - 1) / 2;
+            if (a[p] >= a[i]) break;
+            swap(a[p], a[i]);
+            i = p;
+        }
     }
+    long long pop() {
+        long long x = a[0];
+        a[0] = a.back();
+        a.pop_back();
+        if (!a.empty()) heapify(0);
+        return x;
+    }
+    int size() {
+        return a.size();
+    }
+};
 
+int main() {
+    int n;
+    cin >> n;
+    heap h;
+    while (n--) {
+        long long x;
+        cin >> x;
+        h.push(x);
+    }
+    while (h.size() > 1) {
+        long long x = h.pop();
+        long long y = h.pop();
+        if (x != y) {
+            h.push(x - y);
+        }
+    }
+    if (h.size() == 1) {
+        cout << h.pop() << endl;
+    } else {
+        cout << 0 << endl;
+    }
     return 0;
 }
